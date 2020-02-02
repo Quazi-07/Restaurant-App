@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/a"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="horizontal"
+    android:padding="8dp">
+
+    <LinearLayout
+        android:layout_width="230dp"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_alignRight="@id/a">
+        <CheckBox
+            android:id            = "@+id/add"
+            android:layout_width  = "wrap_content"
+            android:layout_height = "wrap_content" />
+        <TextView
+            android:id="@+id/textViewName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="5dp"
+            android:text="Name: "
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Large" />
+
+        <TextView
+            android:id="@+id/textViewPrice"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Price:"
+            android:textAppearance="@style/Base.TextAppearance.AppCompat.Medium" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/buttonEditFood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/colorPrimary"
+            android:text="Edit" />
+
+        <Button
+            android:id="@+id/buttonDeleteFood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/colorAccent"
+            android:text="Delete" />
+
+        <Button
+            android:id="@+id/buttonAddFoodInCombo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/colorPrimary"
+            android:text="Add in Combo"/>
+        <Button
+            android:id="@+id/buttonClearFood"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/colorPrimaryDark"
+            android:text="Reset"/>
+        <Button
+            android:id="@+id/buttongetAllCombos"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="5dp"
+            android:background="@color/colorPrimary"
+            android:text="View Combo"/>
+
+    </LinearLayout>
+</LinearLayout>

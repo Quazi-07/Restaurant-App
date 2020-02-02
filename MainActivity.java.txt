@@ -1,0 +1,76 @@
+package com.example.mdsaifur.restaurant;
+
+import androidx.appcompat.app.AppCompatActivity;
+import android.content.Intent;
+import android.os.Bundle;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.Spinner;
+import android.widget.Toast;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+
+public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+
+
+    EditText editTextName, editTextPrice;
+
+    //We creating our DatabaseManager object
+    DatabaseManager mDatabase;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+
+        //initializing the database manager object
+        mDatabase = new DatabaseManager(this);
+        //mDatabase.open( );
+
+
+        editTextName = (EditText) findViewById(R.id.editTextName);
+        editTextPrice = (EditText) findViewById(R.id.editTextPrice);
+
+
+        findViewById(R.id.buttonAddFood).setOnClickListener(this);
+        findViewById(R.id.textViewViewFood).setOnClickListener(this);
+    }
+
+    private void addFood() {
+        String name = editTextName.getText().toString().trim();
+        String price = editTextPrice.getText().toString().trim();
+
+
+
+        if (name.isEmpty()) {
+            editTextName.setError("Food Name can't be empty");
+            editTextName.requestFocus();
+            return;
+        }
+
+        if (price.isEmpty()) {
+            editTextPrice.setError("Price can't be empty");
+            editTextPrice.requestFocus();
+            return;
+        }
+
+        //adding food with the DatabaseManager instance
+        if (mDatabase.addFood(name, Double.parseDouble(price)))
+            Toast.makeText(this, "Food Added", Toast.LENGTH_SHORT).show();
+        else
+            Toast.makeText(this, "Could not add Food", Toast.LENGTH_SHORT).show();
+
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.buttonAddFood:
+                addFood();
+                break;
+            case R.id.textViewViewFood:
+                startActivity(new Intent(this, FoodActivity.class));
+                break;
+        }
+    }
+}

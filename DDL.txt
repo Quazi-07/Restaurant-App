@@ -1,0 +1,12 @@
+create table food (
+name varchar(400) primary key,
+price number(6,2) not null
+);
+
+
+CREATE TABLE COMBO(
+id int primary key autocreate,
+food_list varchar(800),
+combo_price number(6,2)
+)
+

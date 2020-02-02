@@ -1,0 +1,249 @@
+package com.example.mdsaifur.restaurant;
+
+import android.content.Context;
+import android.content.DialogInterface;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.EditText;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import java.util.List;
+
+
+public class FoodAdapter extends ArrayAdapter<Food> {
+
+    Context mCtx;
+    int layoutRes;
+    List<Food> foodList;
+
+    //the databasemanager object
+    DatabaseManager mDatabase;
+
+
+    //modified the constructor and we are taking the DatabaseManager instance here
+    public FoodAdapter(Context mCtx, int layoutRes, List<Food> foodList, DatabaseManager mDatabase) {
+        super(mCtx, layoutRes, foodList);
+
+        this.mCtx = mCtx;
+        this.layoutRes = layoutRes;
+        this.foodList = foodList;
+        this.mDatabase = mDatabase;
+    }
+
+    @NonNull
+    @Override
+    public View getView(int position, @Nullable View convertView, @NonNull ViewGroup parent) {
+        LayoutInflater inflater = LayoutInflater.from(mCtx);
+
+        View view = inflater.inflate(layoutRes, null);
+
+        TextView textViewName = view.findViewById(R.id.textViewName);
+        TextView textViewPrice = view.findViewById(R.id.textViewPrice);
+
+        final Food food = foodList.get(position);
+
+        textViewName.setText("Name:"+food.getName());
+        textViewPrice.setText("Price:"+String.valueOf(food.getPrice()));
+
+        view.findViewById(R.id.buttonDeleteFood).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                deleteFood(food);
+            }
+        });
+
+        view.findViewById(R.id.buttonClearFood).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                clearFood(food);
+            }
+        });
+
+        view.findViewById(R.id.buttonEditFood).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                updateFood(food);
+            }
+        });
+        view.findViewById(R.id.buttongetAllCombos).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //getAllCombos(food);
+            }
+        });
+        view.findViewById(R.id.buttonAddFoodInCombo).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                addFoodInCombo(food);
+            }
+        });
+        return view;
+
+    }
+
+    private void updateFood(final Food food) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+        LayoutInflater inflater = LayoutInflater.from(mCtx);
+        View view = inflater.inflate(R.layout.dialog_update_food, null);
+        builder.setView(view);
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        final EditText editTextName = view.findViewById(R.id.editTextName);
+        final EditText editTextPrice = view.findViewById(R.id.editTextPrice);
+
+        editTextName.setText(food.getName());
+        editTextPrice.setText(String.valueOf(food.getPrice()));
+
+
+        view.findViewById(R.id.buttonUpdateFood).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String name = editTextName.getText().toString().trim();
+                String price = editTextPrice.getText().toString().trim();
+
+                if (name.isEmpty()) {
+                    editTextName.setError("Food Name can't be empty");
+                    editTextName.requestFocus();
+                    return;
+                }
+
+                if (price.isEmpty()) {
+                    editTextPrice.setError("Price can't be empty");
+                    editTextPrice.requestFocus();
+                    return;
+                }
+
+
+                //calling the update method from database manager instance
+                if (mDatabase.updateFood(food.getId(), name, Double.valueOf(price))) {
+                    Toast.makeText(mCtx, "Food Updated", Toast.LENGTH_SHORT).show();
+                    loadFoodsFromDatabaseAgain();
+                }
+                alertDialog.dismiss();
+            }
+        });
+    }
+    private void addFoodInCombo(final Food food) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+        LayoutInflater inflater = LayoutInflater.from(mCtx);
+        View view = inflater.inflate(R.layout.dialog_update_food, null);
+        builder.setView(view);
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+
+        final EditText editTextName = view.findViewById(R.id.editTextName);
+        final EditText editTextPrice = view.findViewById(R.id.editTextPrice);
+
+        editTextName.setText(food.getName());
+        editTextPrice.setText(String.valueOf(food.getPrice()));
+
+
+        view.findViewById(R.id.buttonUpdateFood).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                String name = editTextName.getText().toString().trim();
+                String price = editTextPrice.getText().toString().trim();
+
+                if (name.isEmpty()) {
+                    editTextName.setError("Food Name can't be empty");
+                    editTextName.requestFocus();
+                    return;
+                }
+
+                if (price.isEmpty()) {
+                    editTextPrice.setError("Price can't be empty");
+                    editTextPrice.requestFocus();
+                    return;
+                }
+
+
+                //calling the update method from database manager instance
+                if (mDatabase.addFoodInCombo( name, Double.valueOf(price))) {
+                    Toast.makeText(mCtx, "Food Added in Combo", Toast.LENGTH_SHORT).show();
+                    //loadFoodsFromDatabaseAgain();
+                }
+                alertDialog.dismiss();
+            }
+        });
+    }
+
+    private void deleteFood(final Food food) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+        builder.setTitle("Are you sure?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                //calling the delete method from the database manager instance
+                if (mDatabase.deleteFood(food.getId()))
+                    loadFoodsFromDatabaseAgain();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void clearFood(final Food food) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(mCtx);
+        builder.setTitle("Are you sure?");
+
+        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+                //calling the delete method from the database manager instance
+                if (mDatabase.clearFood())
+                    loadFoodsFromDatabaseAgain();
+            }
+        });
+
+        builder.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+        AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+    }
+
+    private void loadFoodsFromDatabaseAgain() {
+        //calling the read method from database instance
+        Cursor cursor = mDatabase.getAllFoods();
+
+        foodList.clear();
+        if (cursor.moveToFirst()) {
+            do {
+                foodList.add(new Food(
+                        cursor.getInt(0),
+                        cursor.getString(1),
+                        cursor.getDouble(2)
+                ));
+            } while (cursor.moveToNext());
+        }
+        notifyDataSetChanged();
+    }
+}

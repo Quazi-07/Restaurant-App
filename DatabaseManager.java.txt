@@ -1,0 +1,126 @@
+package com.example.mdsaifur.restaurant;
+
+import android.content.ContentValues;
+import android.content.Context;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteOpenHelper;
+
+
+//The class is extending SQLiteOpenHelper
+public class DatabaseManager extends SQLiteOpenHelper {
+
+
+    private static final String DATABASE_NAME = "RestaurantDatabase";
+    private static final int DATABASE_VERSION = 1;
+    private static final String TABLE_NAME = "foods";
+    private static final String COLUMN_ID = "id";
+    private static final String COLUMN_NAME = "name";
+    private static final String COLUMN_PRICE = "price";
+    private static final String TABLE_NAMECOM = "combo";
+    private static final String COLUMN_IDCOM = "combo_id";
+    private static final String COLUMN_NAMECOM = "combo_food";
+    private static final String COLUMN_PRICECOM = "combo_price";
+
+    DatabaseManager(Context context) {
+        super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+//    SQLiteDatabase db;
+
+//    public void open( ) throws SQLException {
+//        db = getWritableDatabase();
+//    }
+
+    @Override
+    public void onCreate(SQLiteDatabase sqLiteDatabase) {
+
+
+
+        String sql = "CREATE TABLE " + TABLE_NAME + " (\n" +
+                "    " + COLUMN_ID + " INTEGER NOT NULL CONSTRAINT foods_pk PRIMARY KEY AUTOINCREMENT,\n" +
+                "    " + COLUMN_NAME + " varchar(200) NOT NULL,\n" +
+                "    " + COLUMN_PRICE + " double NOT NULL\n" +
+                ");";
+
+        /*
+         * Executing the string to create the table
+         * */
+        sqLiteDatabase.execSQL(sql);
+
+        String sql2 = "CREATE TABLE " + TABLE_NAMECOM + " (\n" +
+                "    " + COLUMN_IDCOM + " INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,\n" +
+                "    " + COLUMN_NAMECOM + " varchar(400) NOT NULL,\n" +
+                "    " + COLUMN_PRICECOM + " double NOT NULL\n" +
+                ");";
+
+        /*
+         * Executing the string to create the table
+         * */
+        sqLiteDatabase.execSQL(sql2);
+    }
+
+    @Override
+    public void onUpgrade(SQLiteDatabase sqLiteDatabase, int i, int i1) {
+        /*
+         * We are doing nothing here
+         * Just dropping and creating the table
+         * */
+        String sql = "DROP TABLE IF EXISTS " + TABLE_NAME + ";";
+        sqLiteDatabase.execSQL(sql);
+        onCreate(sqLiteDatabase);
+    }
+
+
+    boolean addFood(String name,double price) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_NAME, name);
+        contentValues.put(COLUMN_PRICE, price);
+        SQLiteDatabase db = getWritableDatabase();
+        return db.insert(TABLE_NAME, null, contentValues) != -1;
+    }
+    boolean addFoodInCombo(String name,double price) {
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_NAMECOM, name);
+        contentValues.put(COLUMN_PRICECOM, price);
+        SQLiteDatabase db = getWritableDatabase();
+        return db.insert(TABLE_NAMECOM, null, contentValues) != -1;
+    }
+
+
+    Cursor getAllFoods() {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAME, null);
+    }
+
+    Cursor getAllCombos() {
+        SQLiteDatabase db = getReadableDatabase();
+        return db.rawQuery("SELECT * FROM " + TABLE_NAMECOM, null);
+    }
+
+
+    boolean updateFood(int id, String name, double price) {
+        SQLiteDatabase db = getWritableDatabase();
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(COLUMN_NAME, name);
+        contentValues.put(COLUMN_PRICE, price);
+        return db.update(TABLE_NAME, contentValues, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) == 1;
+    }
+
+
+
+    boolean deleteFood(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        return db.delete(TABLE_NAME, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) == 1;
+    }
+    /*boolean addFoodInCombo(int id) {
+        SQLiteDatabase db = getWritableDatabase();
+        return db.delete(TABLE_NAMECOM, COLUMN_ID + "=?", new String[]{String.valueOf(id)}) == 1;
+    }
+     */
+    boolean clearFood() {
+        SQLiteDatabase db = getWritableDatabase();
+        return db.delete(TABLE_NAME, null, null) == 1;
+    }
+}
